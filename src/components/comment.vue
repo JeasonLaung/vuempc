@@ -36,8 +36,10 @@
           </div>
         </div>
       </div>
-      
-      <div class="market__header_follow font-primary">关注</div>
+      <!-- 关注api -->
+      <form report-submit @submit="handleFollow" v-if="!followed">
+        <button form-type="submit" class="market__header_follow font-primary">关注</button>
+      </form>
       
     </div><!-- 左边 -->
 
@@ -195,6 +197,7 @@ export default {
       inputHide: true,
       marketType: '',
       liked: false,
+      followed: false,
       timer: null,
       UPLOAD_PATH,
 
@@ -217,6 +220,10 @@ export default {
     }
   },
   methods: {
+    handleFollow (e) {
+      console.log('关注发起的数据', e.mp.detail)
+      this.followed = true
+    },
     preview (id) {
       wx.previewImage({
         current: this.one.photos[id],
@@ -333,9 +340,12 @@ export default {
   display: flex;
 }
 .market__header_follow{
-  padding:10rpx 20rpx;
+  padding: 0;
+  font-size: 30rpx;
+  padding: 0 20rpx;
   border-width:1rpx;
   border-style:solid;
+  background-color: #fff;
   border-radius:10rpx;
 }
 .market__header_face {
@@ -346,7 +356,7 @@ export default {
 }
 .market__header_little{
   font-size: 27rpx;
-  color: #ddd;
+  color: #aaa;
 }
 
 /* 车源 */

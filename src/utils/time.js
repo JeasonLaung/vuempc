@@ -21,6 +21,6 @@ export const wxtime = function (timestamps) {
   } else {
     let timestamp = new Date()
     timestamp.setTime(timestamps)
-    return [timestamp.getFullYear(), timestamp.getMonth() + 1, timestamp.getDate()].map(this.formatNumber).join('/')
+    return [timestamp.getFullYear(), timestamp.getMonth() + 1, timestamp.getDate()].join('/')
   }
 }
