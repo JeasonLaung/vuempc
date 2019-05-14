@@ -24,119 +24,124 @@
     </div>
 
     <!-- 左边 -->
-    <div class="market__header">
-      <div class="market__header_left">
-        <img :src="one.shotcut" mode="aspectFill" class="market__header_face">
-        <div class="market__header_info">
-          <div class="font-blue font-bolder">
-            {{one.nickname}}
+    <div class="market-left">
+      <div class="market__face">
+        <img :src="one.shotcut" mode="aspectFill" class="market__face_img">
+      </div><!-- 左边 -->
+      <!-- <div style="market__logo">
+        <img :src="one.logo"  mode="aspectFill" class="market__logo_img">
+      </div> -->
+    </div>
+
+    <!-- 右边 -->
+    <div class="market-right">
+      <!-- 用户信息 -->
+      <div class="market__header">
+        <div class="font-blue font-bolder">
+          {{one.nickname}}
+        </div>
+        <!-- 关注日后开发 -->
+        <!-- <div class="market__header_follow">
+          关注
+        </div> -->
+      </div>
+
+      <!-- 车源 -->
+      <div 
+          class="market__content"
+          @click="marketOver && marketHide ? toggle() : false"
+          >
+        <div v-if="marketType === 'array'">
+          <div
+          @longpress="actionMarket"
+          v-for="(item,index) in market" 
+          :key="index" >
+          {{item}}
           </div>
-          <div class="market__header_little">
-            {{one.company_name}}
+        </div>
+        <div 
+          v-if="marketType === 'string'"
+          >
+          {{market}}
+        </div>
+        <!-- 更多 -->
+        <div class="font-blue market__content_more" 
+          v-if="marketOver && marketHide"
+          @click.stop="toggle"
+          @longpress="actionMarket"
+          >
+          更多 <i class="iconfont icon-bottom"></i>
+        </div>
+        <div class="font-blue market__content_more" 
+          v-if="marketOver && !marketHide"
+          @click.stop="toggle"
+          >
+          收起 <i class="iconfont icon-top"></i>
+        </div>
+      </div>
+      
+      <!-- 图片 -->
+      <div class="market__photo" v-if="one.photos != false">
+        <div 
+          class="market__photo_item" 
+          v-for="(item,index) in one.photos"
+          :key="index">
+          <img 
+            class="market__photo_item-img" 
+            :src="item"
+            mode="aspectFill"
+            @click="preview(index)"/>
+        </div>
+      </div>
+
+
+
+
+      <!-- 时间+操作 -->
+      <div class="market__time">
+        <div>{{create_time}}</div>
+        <div style="display:flex;">
+          <div 
+            class="iconfont icon-heart" 
+            v-if="liked" 
+            style="margin-right: 20rpx;color:#df5064"></div>
+          <div 
+            class="iconfont icon-more-menu market__time_action" 
+            @click.stop="showAction = !showAction">
+            <div class="market__time_action_list" v-if="showAction">
+              <div 
+                class="market__time_action_list_item" 
+                @click.stop="likeMarket"
+                >
+                  <i class="iconfont icon-heart1"></i>
+                  {{ liked ? '取消' : '赞'}}
+              </div>
+              <div 
+                class="market__time_action_list_item"
+                @click="inputHide = false"
+                >
+                  <i class="iconfont icon-message2"></i>
+                  评论
+              </div>
+            </div>
           </div>
         </div>
       </div>
       
-      <div class="market__header_follow font-primary">关注</div>
       
-    </div><!-- 左边 -->
 
-    <!-- 车源 -->
-    <div 
-        class="market__content"
-        @click="marketOver && marketHide ? toggle() : false"
-        >
-      <img :src="one.logo" class="market__content_logo" mode="aspectFill">
-      <div v-if="marketType === 'array'">
-        <div
-        @longpress="actionMarket"
-        v-for="(item,index) in market" 
-        :key="index" >
-        {{item}}
-        </div>
-      </div>
-      <div 
-        v-if="marketType === 'string'"
-        >
-        {{market}}
-      </div>
-      <!-- 更多 -->
-      <div class="font-blue market__content_more" 
-        v-if="marketOver && marketHide"
-        @click.stop="toggle"
-        @longpress="actionMarket"
-        >
-        更多 <i class="iconfont icon-bottom"></i>
-      </div>
-      <div class="font-blue market__content_more" 
-        v-if="marketOver && !marketHide"
-        @click.stop="toggle"
-        >
-        收起 <i class="iconfont icon-top"></i>
-      </div>
-    </div>
-    
-    <!-- 图片 -->
-    <div class="market__photo" v-if="one.photos != false">
-      <div 
-        class="market__photo_item" 
-        v-for="(item,index) in one.photos"
-        :key="index">
-        <img 
-          class="market__photo_item-img" 
-          :src="item"
-          mode="aspectFill"
-          @click="preview(index)"/>
-      </div>
-    </div>
-
-
-
-
-    <!-- 时间+操作 -->
-    <div class="market__time">
-      <div>{{create_time}}</div>
-      <div style="display:flex;">
-        <div 
-          class="iconfont icon-heart" 
-          v-if="liked" 
-          style="margin-right: 20rpx;color:#df5064"></div>
-        <div 
-          class="iconfont icon-more-menu market__time_action" 
-          @click.stop="showAction = !showAction">
-          <div class="market__time_action_list" v-if="showAction">
-            <div 
-              class="market__time_action_list_item" 
-              @click.stop="likeMarket"
-              >
-                <i class="iconfont icon-heart1"></i>
-                {{ liked ? '取消' : '赞'}}
-            </div>
-            <div 
-              class="market__time_action_list_item"
-              @click="inputHide = false"
-              >
-                <i class="iconfont icon-message2"></i>
-                评论
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    
-
-    <!-- 评论 -->
-    <div class="comment" v-if="comment != false">
-      <!-- 姓名+内容 -->
-      <div class="comment__item" 
-        v-for="(item,index) in comment" 
-        :key="index"
-        >
-        <span class="font-blue font-bolder">{{item.comment_uname}}</span>
-        : {{item.content}}
-      </div><!-- 姓名+内容 -->
-    </div><!-- 评论 -->
+      <!-- 评论 -->
+      <div class="comment" v-if="comment != false">
+        <!-- 姓名+内容 -->
+        <div class="comment__item" 
+          v-for="(item,index) in comment" 
+          :key="index"
+          >
+          <span class="font-blue font-bolder">{{item.comment_uname}}</span>
+          : {{item.content}}
+        </div><!-- 姓名+内容 -->
+      </div><!-- 评论 -->
+    </div><!-- 右边 -->
   </div>
 </template>
 
@@ -149,7 +154,7 @@ import {UPLOAD_PATH} from '@/config/common'
 import compatible from '@/mixins/compatible'
 
 const config = {
-  overLine: 11 // 超出隐藏
+  overLine: 7 // 超出隐藏
 }
 
 const initForm = {
@@ -292,11 +297,10 @@ export default {
 /* 布局 */
 .market{
   /* background-color: #ddd; */
-  /* display: flex; */
-  padding: 24rpx 35rpx;
+  display: flex;
+  padding: 24rpx 27rpx;
   font-size: 35rpx;
   color: #222;
-  /* background-color: #ddd; */
   border-bottom: 1rpx solid #ebebeb;
 }
 .market-left{
@@ -304,6 +308,11 @@ export default {
 }
 
 /* 头像 */
+.market__face_img{
+  width: 85rpx;
+  height: 85rpx;
+  border-radius: 5rpx;
+}
 .market__logo{
   display: flex;
   justify-content: center;
@@ -318,52 +327,15 @@ export default {
 
 /* 信息 */
 .market__header{
+  margin-bottom: 20rpx; 
   display: flex;
   justify-content: space-between;
-  margin-bottom: 30rpx;
-  align-items: center;
-}
-.market__header_left{
-  display: flex;
-
-}
-.market__header_info{
-  flex-direction: column;
-  justify-content: center;
-  display: flex;
-}
-.market__header_follow{
-  padding:10rpx 20rpx;
-  border-width:1rpx;
-  border-style:solid;
-  border-radius:10rpx;
-}
-.market__header_face {
-  width: 100rpx;
-  height: 100rpx;
-  border-radius: 10rpx;
-  margin-right: 35rpx;
-}
-.market__header_little{
-  font-size: 27rpx;
-  color: #ddd;
 }
 
 /* 车源 */
-.market__content{
-  position: relative;
+.market__content:active{
+  background-color: #f2f2f2;
 }
-.market__content_logo{
-  width: 150rpx;
-  height: 150rpx;
-  opacity: .3;
-  position: absolute;
-  top: 0;
-  right: 0;
-}
-/* .market__content:active{ */
-  /* background-color: #f2f2f2; */
-/* } */
 .market__content_more{
   display: flex;
   align-items: center;

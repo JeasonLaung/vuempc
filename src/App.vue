@@ -1,6 +1,9 @@
 <script>
+import store from '@/store'
 export default {
   created () {
+    store.commit('setConfig')
+
     // 调用API从本地缓存中获取数据
     /*
      * 平台 api 差异的处理方式:  api 方法统一挂载到 mpvue 名称空间, 平台判断通过 mpvuePlatform 特征字符串
@@ -33,6 +36,7 @@ export default {
 <style>
 @import "./vuempc.css";
 @import "./icon.css";
+@import "./compatible.css";
 .container {
   height: 100%;
   display: flex;

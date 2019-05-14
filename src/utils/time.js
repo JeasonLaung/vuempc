@@ -11,7 +11,7 @@ export const wxtime = function (timestamps) {
   dayMin = Math.round(ts / 60)
   daySec = Math.round(ts)
   if (dayS > 0 && dayS < 2) {
-    return `${dayS}天以前`
+    return `${dayS}天前`
   } else if (dayS <= 0 && dayHour > 0) {
     return `${dayHour}小时前`
   } else if (dayHour <= 0 && dayMin > 0) {
