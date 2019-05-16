@@ -26,20 +26,32 @@
     <!-- 左边 -->
     <div class="market__header">
       <div class="market__header_left">
-        <img :src="one.shotcut" mode="aspectFill" class="market__header_face">
+
+        <img 
+          v-if="one.shotcut"
+          :src="one.shotcut"
+          mode="aspectFill" 
+          class="market__header_face">
+        <img 
+          v-else
+          class="market__header_face"
+          :src="DEFAULT_MAN"
+          mode="aspectFill"/>
+        
         <div class="market__header_info">
           <div class="font-blue font-bolder">
-            {{one.nickname}}
+            {{one.name}}
           </div>
           <div class="market__header_little">
             {{one.company_name}}
           </div>
         </div>
       </div>
+      <!-- 暂时不做 -->
       <!-- 关注api -->
-      <form report-submit @submit="handleFollow" v-if="!followed">
+      <!-- <form report-submit @submit="handleFollow" v-if="!followed">
         <button form-type="submit" class="market__header_follow font-primary">关注</button>
-      </form>
+      </form> -->
       
     </div><!-- 左边 -->
 
@@ -48,7 +60,7 @@
         class="market__content"
         @click="marketOver && marketHide ? toggle() : false"
         >
-      <img :src="one.logo" class="market__content_logo" mode="aspectFill">
+      <img :src="LOGO_PATH + one.logo" class="market__content_logo" mode="aspectFill">
       <div v-if="marketType === 'array'">
         <div
         @longpress="actionMarket"
@@ -68,26 +80,28 @@
         @click.stop="toggle"
         @longpress="actionMarket"
         >
-        更多 <i class="iconfont icon-bottom"></i>
+        全文
       </div>
       <div class="font-blue market__content_more" 
         v-if="marketOver && !marketHide"
         @click.stop="toggle"
         >
-        收起 <i class="iconfont icon-top"></i>
+        收起
       </div>
     </div>
     
     <!-- 图片 -->
     <div class="market__photo" v-if="one.photos != false">
       <div 
-        class="market__photo_item" 
+        class="market__photo_item"
+        :class="{'market__photo_item-one': one.photos.length === 1}"
         v-for="(item,index) in one.photos"
         :key="index">
         <img 
-          class="market__photo_item-img" 
-          :src="item"
-          mode="aspectFill"
+          v-if="item"
+          :class="{'market__photo_item-img': one.photos.length > 1,'market__photo_item-one': one.photos.length === 1}"
+          :src="UPLOAD_PATH + item"
+          :mode="one.photos.length > 1 ? 'aspectFill' : 'aspectFit'"
           @click="preview(index)"/>
       </div>
     </div>
@@ -131,11 +145,14 @@
     <!-- 评论 -->
     <div class="comment" v-if="comment != false">
       <!-- 姓名+内容 -->
-      <div class="comment__item" 
+      <div 
+        class="comment__item"
         v-for="(item,index) in comment" 
         :key="index"
         >
-        <span class="font-blue font-bolder">{{item.comment_uname}}</span>
+        <!-- 葡挞提醒 -->
+        <span class="font-blue font-bolder" v-if="item.type === 2" style="color: rgba(255,153,0,.8)"><icon class="iconfont icon-tixing"></icon> 葡萄提醒</span>
+        <span class="font-blue font-bolder" v-else>{{item.nickname}}</span>
         : {{item.content}}
       </div><!-- 姓名+内容 -->
     </div><!-- 评论 -->
@@ -145,13 +162,13 @@
 <script>
 import {wxtime} from '@/utils/time.js'
 import store from '@/store'
-import {UPLOAD_PATH} from '@/config/common'
+import {UPLOAD_PATH, LOGO_PATH, DEFAULT_MAN} from '@/config/common'
 
 // 兼容
 import compatible from '@/mixins/compatible'
 
 const config = {
-  overLine: 11 // 超出隐藏
+  overLine: 15 // 超出隐藏
 }
 
 const initForm = {
@@ -161,15 +178,20 @@ const initForm = {
 export default {
   props: ['one'],
   mounted () {
-    console.log(wx.getSystemInfoSync())
+    // console.log(wx.getSystemInfoSync())
     let tmp = []
     // 车源处理
     if (this.one.market) {
       // 112字一行16个子，只显示7行
-      if (this.one.market.length > 16 * config.overLine) {
-        this.market = this.one.market.slice(0, 16 * config.overLine)
+      if (this.one.market.length > 18 * config.overLine) {
+        // this.market = this.one.market.slice(0, 18 * config.overLine)
+        // this.marketOver = true
+        // this.marketType = 'string'
+
+        this.market = this.one.market.slice(0, 18 * config.overLine).split(/\n|\\n|\\\n/)
         this.marketOver = true
-        this.marketType = 'string'
+        this.marketType = 'array'
+        console.log(this.market)
       } else {
         tmp = this.one.market.split(/\n|\\n|\\\n/)
         if (tmp.length > config.overLine) {
@@ -187,6 +209,7 @@ export default {
     this.liked = this.one.liked
 
     this.comment = this.one.comment
+    console.log(this.market)
   },
   data () {
     return {
@@ -200,6 +223,8 @@ export default {
       followed: false,
       timer: null,
       UPLOAD_PATH,
+      LOGO_PATH,
+      DEFAULT_MAN,
 
       // 内存
       comment: [],
@@ -226,9 +251,10 @@ export default {
     },
     preview (id) {
       wx.previewImage({
-        current: this.one.photos[id],
-        urls: [...this.one.photos.map(item => item)]
+        current: UPLOAD_PATH + this.one.photos[id],
+        urls: [...this.one.photos.map(item => UPLOAD_PATH + item)]
       })
+      console.log(this.comment)
     },
     actionMarket () {
       let self = this
@@ -262,8 +288,8 @@ export default {
       // 读取该车源
       // readMarket({})
       this.comment.push({
-        comment_uid: store.state.userInfo.id,
-        comment_uname: store.state.userInfo.nickname,
+        user_id: store.state.userInfo.id,
+        nickname: store.state.userInfo.nickname,
         content: this.form.content
       })
       this.form = {...initForm}
@@ -394,6 +420,11 @@ export default {
   height: 180rpx;
   margin-bottom: 20rpx;
   margin-right: 20rpx;
+}
+.market__photo_item-one{
+  width: 250rpx;
+  height: 250rpx;
+
 }
 .market__photo_item:nth-of-type(3n){
   margin-right: 0rpx;
